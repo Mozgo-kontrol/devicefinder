@@ -1,6 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Device finder</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_login_fragment">Hello Login fragment</string>
     <string name="hello_list_fragment">Hello List fragment</string>
     <string name="tittle_list_fragment">Username: %1$s %2$s</string>
