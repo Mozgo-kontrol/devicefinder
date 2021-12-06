@@ -29,7 +29,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
     private lateinit var vtTittle: TextView
 
-
     private val deviceListViewModel by viewModels<DeviceListViewModel> {
             DevicesListViewModelFactory(this.context!!)
         }
@@ -39,10 +38,12 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         vtTittle = view.findViewById(R.id.tv_title)
+         val firstname = args.firstname[0].uppercase()+ args.firstname.substring(1, args.firstname.length)
+        val lastname = args.lastname[0].uppercase()+ args.lastname.substring(1, args.lastname.length)
+        Log.wtf(TAG, "last name:$firstname $lastname!")
+        vtTittle.text =  getString(R.string.tittle_list_fragment, firstname, lastname)
 
-        vtTittle.text =  getString(R.string.tittle_list_fragment, args.firstname, args.lastname)
-
-        val employee = Employee(4, args.firstname, args.lastname)
+        val employee = Employee(4, firstname, lastname)
 
         val recyclerView : RecyclerView = view.findViewById(R.id.recyclerView)
 
@@ -79,9 +80,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
     private fun goToLoginFragment(){
 
-        val action = ListFragmentDirections.actionListFragmentToLoginFragment()
-        findNavController().navigate(action)
-
+        findNavController().navigateUp()
     }
 }
 

@@ -11,6 +11,16 @@
       "currentStatus": "Free"
     },
     {
+      "id": 14,
+      "model": "XIAOMI T9 RPO",
+      "employee": {
+        "id": 5,
+        "firstname": "Paul",
+        "lastname": "Stark"
+      },
+      "currentStatus": "InUse"
+    },
+    {
       "id": 8,
       "model": "Iphone 13 pro",
       "employee": {
@@ -35,8 +45,8 @@
       "model": "Samsung A51",
       "employee": {
         "id": 4,
-        "firstname": "igor",
-        "lastname": "ferbert"
+        "firstname": "Igor",
+        "lastname": "Ferbert"
       },
       "currentStatus": "InUse"
     }
