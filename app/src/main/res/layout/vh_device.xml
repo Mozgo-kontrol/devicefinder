@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    app:layout_constraintCircleRadius="20dp"
+    android:orientation="horizontal"
+    android:background="@drawable/card_border">
+
+        <LinearLayout
+            android:id="@+id/ll_text_vh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.50">
+
+            <TextView
+                android:id="@+id/tv_model_name_vh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_margin="16dp"
+                android:maxLines="1"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:text="@string/model_name_default"
+                tools:text="Samsung S10"/>
+
+            <TextView
+                android:id="@+id/tv_currently_vh"
+                android:layout_width="wrap_content"
+                android:layout_gravity="start"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="16sp"
+                tools:text="Currently in The Office" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_section_vh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="0.8">
+
+            <TextView
+                android:id="@+id/tv_your_device_vh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="end"
+                android:maxLines="1"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="@string/this_is_your_device"
+                android:textColor="@color/yellow"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/bt_switch_vh"
+                android:layout_width="wrap_content"
+                android:layout_height="27dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="end"/>
+        </LinearLayout>
+
+</LinearLayout>

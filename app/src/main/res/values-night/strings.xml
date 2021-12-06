@@ -3,4 +3,10 @@
     <string name="hello_login_fragment">Hello Login fragment</string>
     <string name="hello_list_fragment">Hello List fragment</string>
     <string name="tittle_list_fragment">Username: %1$s %2$s</string>
+    <string name="model_name_default">Samsung S10</string>
+    <string name="currently_be">currently %1$s! %2$s!</string>
+    <string name="samsung_s">Samsung s10</string>
+    <string name="samsung_a">Samsung A51</string>
+    <string name="this_is_your_device">This is your device</string>
+    <string name="sign_out">Sign out</string>
 </resources>

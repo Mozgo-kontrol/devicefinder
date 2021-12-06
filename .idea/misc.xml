@@ -3,8 +3,39 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5219238331725636" />
-        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.327683615819209" />
+        <entry key="../../../../layout/compose-model-1638208184919.xml" value="1.0" />
+        <entry key="../../../../layout/compose-model-1638210676797.xml" value="0.7684887459807074" />
+        <entry key="../../../../layout/compose-model-1638210939319.xml" value="1.0" />
+        <entry key="../../../../layout/compose-model-1638213398677.xml" value="0.625" />
+        <entry key="../../../../layout/compose-model-1638213904191.xml" value="0.45" />
+        <entry key="../../../../layout/compose-model-1638436947344.xml" value="0.4166666666666667" />
+        <entry key="../../../../layout/compose-model-1638441301103.xml" value="0.16617892976588627" />
+        <entry key="../../../../layout/compose-model-1638442604026.xml" value="1.0" />
+        <entry key="../../../../layout/compose-model-1638443574586.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1638444594846.xml" value="0.1213327745180218" />
+        <entry key="../../../../layout/compose-model-1638524231743.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1638530932131.xml" value="0.30833333333333335" />
+        <entry key="../../../../layout/compose-model-1638537165060.xml" value="0.1574074074074074" />
+        <entry key="../../../../layout/compose-model-1638540474347.xml" value="0.1574074074074074" />
+        <entry key="../../../../layout/compose-model-1638546146436.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1638556508604.xml" value="0.335" />
+        <entry key="../../../../layout/compose-model-1638556508676.xml" value="0.2851851851851852" />
+        <entry key="../../../../layout/compose-model-1638715511784.xml" value="0.27870370370370373" />
+        <entry key="../../../../layout/compose-model-1638715742519.xml" value="0.375" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2359375" />
+        <entry key="app/src/main/res/drawable/card_border.xml" value="0.25" />
+        <entry key="app/src/main/res/drawable/ic_android_default.xml" value="0.2359375" />
+        <entry key="app/src/main/res/drawable/ic_iphone_default.xml" value="0.2359375" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2359375" />
+        <entry key="app/src/main/res/drawable/shape_rechtangle.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.12684365781710916" />
+        <entry key="app/src/main/res/layout/fragment_compose_list.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/layout/fragment_list.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_list_compose.xml" value="0.37395833333333334" />
+        <entry key="app/src/main/res/layout/fragment_list_second.xml" value="0.1685185185185185" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.15625" />
+        <entry key="app/src/main/res/layout/vh_device.xml" value="0.335" />
+        <entry key="app/src/main/res/menu/main_menu.xml" value="0.3880208333333333" />
       </map>
     </option>
   </component>

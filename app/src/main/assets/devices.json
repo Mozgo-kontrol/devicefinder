@@ -1,0 +1,44 @@
+{
+  "Devices": [
+    {
+      "id": 9,
+      "model": "Samsung S10",
+      "employee": {
+        "id": 1,
+        "firstname": "Im",
+        "lastname": "Office"
+      },
+      "currentStatus": "Free"
+    },
+    {
+      "id": 8,
+      "model": "Iphone 13 pro",
+      "employee": {
+        "id": 1,
+        "firstname": "Im",
+        "lastname": "Office"
+      },
+      "currentStatus": "Free"
+    },
+    {
+      "id": 7,
+      "model": "Samsung A51",
+      "employee": {
+        "id": 123,
+        "firstname": "Alexander",
+        "lastname": "Knauf"
+      },
+      "currentStatus": "InUse"
+    },
+    {
+      "id": 13,
+      "model": "Samsung A51",
+      "employee": {
+        "id": 4,
+        "firstname": "igor",
+        "lastname": "ferbert"
+      },
+      "currentStatus": "InUse"
+    }
+  ]
+}

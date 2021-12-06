@@ -37,4 +37,5 @@
             android:id="@+id/action_listFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
+
 </navigation>
