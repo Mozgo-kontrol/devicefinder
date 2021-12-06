@@ -23,7 +23,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val inputMail = view.findViewById<EditText>(R.id.ti_et)
         val login = view.findViewById<Button>(R.id.button)
 

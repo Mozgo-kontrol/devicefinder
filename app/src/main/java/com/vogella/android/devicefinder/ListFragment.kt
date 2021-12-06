@@ -17,18 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vogella.android.dev.DeviceAdapter
 import com.vogella.android.devicefinder.data.*
 
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * A simple [Fragment] subclass.
  * Use the [ListFragment.newInstance] factory method to
@@ -93,7 +81,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         val action = ListFragmentDirections.actionListFragmentToLoginFragment()
         findNavController().navigate(action)
-        findNavController().popBackStack()
 
     }
 }
