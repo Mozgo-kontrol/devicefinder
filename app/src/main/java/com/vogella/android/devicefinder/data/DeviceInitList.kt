@@ -2,6 +2,7 @@ package com.vogella.android.devicefinder.data
 
 import android.content.Context
 import android.content.res.Resources
+import android.os.Looper
 import android.util.Log
 import com.vogella.android.devicefinder.LoginFragment
 import com.vogella.android.devicefinder.R
@@ -50,6 +51,9 @@ fun imOfficeEmployee(): Employee = Employee(1, "Im", "Office")
 object Utils {
 
     fun getJsonFromAssets(context: Context, fileName: String?): String? {
+        val b = Looper.getMainLooper().thread == Thread.currentThread()
+        val currenttread =Thread.currentThread().name
+        Log.i("getJsonFromAssets", "Main its current thread: $b : $currenttread")
         val jsonString: String = try {
             val inputStream: InputStream? = fileName?.let { context.assets.open(it) }
             val size: Int = inputStream!!.available()

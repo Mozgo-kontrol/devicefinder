@@ -4,25 +4,62 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations.map
+import com.vogella.android.devicefinder.AsyncTransformer
+import io.reactivex.*
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+
+import java.util.*
 
 class DataSource(private val context: Context, resources: Resources) {
 
     private val TAG: String = DataSource::class.java.simpleName
     //init the list
 
-    private val jsonFileString = Utils.getJsonFromAssets(this.context!!, "devices.json")
+    //private val jsonFileString = Utils.getJsonFromAssets(this.context!!, "devices.json")
 
-    private val initListFromJson = parseJSONString(jsonFileString)
+   // private val initListFromJson = parseJSONString(jsonFileString)
 
-    private val initialDeviceList = initListFromJson
+   //      private val initialDeviceList = initListFromJson
+    // Example 1
+     @SuppressLint("CheckResult")
+     private fun initDevicesList(context: Context, filename: String) : List<Device> {
+         val result = mutableListOf<Device>()
+         Observable.fromCallable{parseJSONString(Utils.getJsonFromAssets(context, filename))}
+             .subscribeOn(Schedulers.io())
+             .observeOn(AndroidSchedulers.mainThread())
+             .subscribe{list ->list!!.forEach { device -> result.add(device)}}
 
-    // private val initialDeviceList = deviceList(resources)
+        return result
+    }
+/*
+    private fun getDeviceObserver(): Observer<List<Device>> {
+        return object : Observer<List<Device>> {
+            override fun onNext(t: List<Device>) {
+               // t.forEach { device -> initList.add(device)}
+                Log.i(TAG, "add ${t.size} elements in the list")
+            }
 
+            override fun onSubscribe(d: Disposable) {
+                Log.i(TAG, "subscribed on $d")
+            }
+
+            override fun onComplete() {
+                Log.i(TAG, "All items are emitted!")
+            }
+            override fun onError(e: Throwable) {
+                Log.i(TAG, "onError: " + e.message)
+            }
+        }
+    }*/
+
+   private val initialDeviceList = initDevicesList(this.context, "devices.json")
     private var deviceLiveData = MutableLiveData(initialDeviceList)
-
-
 
     fun addDeviceFromList(list : List<Device>){
         val currentList = deviceLiveData.value as MutableList<Device>
@@ -30,6 +67,7 @@ class DataSource(private val context: Context, resources: Resources) {
         deviceLiveData.postValue(currentList)
 
     }
+
     fun removeDevice(device: Device){}
 
 

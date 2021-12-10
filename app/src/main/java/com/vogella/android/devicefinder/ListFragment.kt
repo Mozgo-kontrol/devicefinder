@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.compose.foundation.layout.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,6 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vogella.android.dev.DeviceAdapter
 import com.vogella.android.devicefinder.data.*
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+
 
 /**
  * A simple [Fragment] subclass.
@@ -63,6 +69,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             })
         val mLayoutManager = LinearLayoutManager(this.context)
         recyclerView.layoutManager = mLayoutManager
+
     }
      override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
@@ -82,6 +89,33 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         findNavController().navigateUp()
     }
+
+
+    @JvmName("getAnimalsObserver1")
+    private fun getAnimalsObserver(): Observer<String> {
+        return object : Observer<String> {
+
+            override fun onSubscribe(d: Disposable) {
+                Log.d(TAG, "onSubscribe")
+            }
+
+            override fun onNext(s: String) {
+                Log.d(TAG, "Name: $s")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e(TAG, "onError: " + e.message)
+            }
+
+            override fun onComplete() {
+                Log.d(TAG, "All items are emitted!")
+            }
+
+
+        }
+    }
+
+
 }
 
 
