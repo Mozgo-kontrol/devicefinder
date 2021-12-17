@@ -4,108 +4,107 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations.map
-import com.vogella.android.devicefinder.AsyncTransformer
 import io.reactivex.*
 import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import java.io.*
+import java.lang.Exception
+import java.nio.charset.StandardCharsets
 
 import java.util.*
+import java.util.Observer
+import java.util.stream.Collectors
 
-class DataSource(private val context: Context, resources: Resources) {
+class DataSource(private val context: Context,val resources: Resources) {
 
     private val TAG: String = DataSource::class.java.simpleName
-    //init the list
 
-    //private val jsonFileString = Utils.getJsonFromAssets(this.context!!, "devices.json")
+    fun loadDevicesList(filename: String = "devices.json"): Observable<List<Device>> {
 
-   // private val initListFromJson = parseJSONString(jsonFileString)
+       // val jsonString = Utils.getJsonFromAssets(context, filename)
+         return Observable.fromCallable {
+             val jsonString = Utils.getJsonFromAssets(context, filename)
+             val parseJSONString = jsonString?.let { parseJSONStringToList(jsonString = it) }
+             parseJSONString
+         }
 
-   //      private val initialDeviceList = initListFromJson
-    // Example 1
-     @SuppressLint("CheckResult")
-     private fun initDevicesList(context: Context, filename: String) : List<Device> {
-         val result = mutableListOf<Device>()
-         Observable.fromCallable{parseJSONString(Utils.getJsonFromAssets(context, filename))}
-             .subscribeOn(Schedulers.io())
-             .observeOn(AndroidSchedulers.mainThread())
-             .subscribe{list ->list!!.forEach { device -> result.add(device)}}
-
-        return result
-    }
-/*
-    private fun getDeviceObserver(): Observer<List<Device>> {
-        return object : Observer<List<Device>> {
-            override fun onNext(t: List<Device>) {
-               // t.forEach { device -> initList.add(device)}
-                Log.i(TAG, "add ${t.size} elements in the list")
-            }
-
-            override fun onSubscribe(d: Disposable) {
-                Log.i(TAG, "subscribed on $d")
-            }
-
-            override fun onComplete() {
-                Log.i(TAG, "All items are emitted!")
-            }
-            override fun onError(e: Throwable) {
-                Log.i(TAG, "onError: " + e.message)
-            }
-        }
-    }*/
-
-   private val initialDeviceList = initDevicesList(this.context, "devices.json")
-    private var deviceLiveData = MutableLiveData(initialDeviceList)
-
-    fun addDeviceFromList(list : List<Device>){
-        val currentList = deviceLiveData.value as MutableList<Device>
-        list.forEach { currentList.add(it)}
-        deviceLiveData.postValue(currentList)
-
-    }
-
-    fun removeDevice(device: Device){}
-
-
-    private fun updateDeviceStatus(d: Device) : Status =
-        when(d.employee.id.toInt()){
-            1->{Status.Free}
-            else->{Status.InUse}
-        }
-
-    fun updateDeviceEmployee(device: Device, employee: Employee) {
-        val currentList = deviceLiveData.value
-
-        if (currentList != null) {
-            for(d in currentList){
-                if(d.id==device.id){
-                    Log.wtf(TAG, "${d.model} before ${d.employee.firstname } and Status ${d.currentStatus}")
-                    d.employee = employee
-                    d.currentStatus = updateDeviceStatus(d)
-
-                    deviceLiveData.postValue(currentList)
-
-                    Log.wtf(TAG, "${d.model} after ${d.employee.firstname } and Status ${d.currentStatus}")
-
+        /*  return if ("" != null) {
+                Observable.fromCallable {
+                    val jsonString = Utils.getJsonFromAssets(context, filename)
+                    val parseJSONString = jsonString?.let { parseJSONString(jsonString = it) }
+                    parseJSONString
                 }
-            }
-        }
-
+            } else {
+                Observable.empty()
+            }*/
     }
 
-    fun getDeviceList(): MutableLiveData<List<Device>?> = deviceLiveData
+    fun saveFile(jsonString : String) {
 
-    fun getDeviceForId(id: Long): Device? {
-        deviceLiveData.value?.let { device ->
-            return device.firstOrNull { it.id == id }
+        val tag = "saveFile"
+        showMeThread(tag)
+
+        val filename = "DevicesStringJson.json"
+        val fileOutputStream: FileOutputStream
+        try {
+            fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)
+            fileOutputStream.write(jsonString.toByteArray())
+            fileOutputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun loadFile(): String {
+
+        val tag = "loadFile"
+        showMeThread(tag)
+
+         val filename = "DevicesStringJson.json"
+         var data = ""
+         val fileInputStream: FileInputStream
+         try {
+             fileInputStream = context.openFileInput(filename)
+             val stream = BufferedInputStream(fileInputStream)
+
+             data = BufferedReader(
+                 InputStreamReader(stream, StandardCharsets.UTF_8)
+             )   .lines()
+                 .collect(Collectors.joining("\n"))
+             fileInputStream.close()
+         }
+         catch (e: Exception) {
+             e.printStackTrace()
+         }
+         return data
+     }
+
+
+   /* fun loadFile(): Observable<String> {
+        val filename = "DevicesStringJson.json"
+        var data = ""
+        //val fileInputStream: FileInputStream
+        return Observable.fromCallable {getFile(context)}
+            .map {convertStreamToString(it)}
+    }
+
+    private fun getFile(context: Context): InputStream? {
+
+        val filename = "DevicesStringJson.json"
+        try {
+            val fileInputStream = context.openFileInput(filename)
+           val steam = BufferedInputStream(fileInputStream)
+            fileInputStream.close()
+            return steam
+        }
+        catch (e :Exception){
+            println(e.stackTrace)
         }
         return null
-    }
+    }*/
 
+    //example 1
+
+    fun removeDevice(device: Device) {}
 
     companion object {
         @SuppressLint("StaticFieldLeak")

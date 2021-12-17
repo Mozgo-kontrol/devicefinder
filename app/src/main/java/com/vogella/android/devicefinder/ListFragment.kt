@@ -1,5 +1,6 @@
 package com.vogella.android.devicefinder
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -8,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.MainThread
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -57,7 +59,8 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         recyclerView.adapter = deviceAdapter
         //data is observable
-        deviceListViewModel.deviceLiveData.observe(viewLifecycleOwner, {
+
+        deviceListViewModel.getDeviceList().observe(viewLifecycleOwner, {
             it?.let { it ->
 
                 with(deviceAdapter) {
@@ -86,36 +89,13 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         }
     }
     private fun goToLoginFragment(){
-
         findNavController().navigateUp()
     }
 
-
-    @JvmName("getAnimalsObserver1")
-    private fun getAnimalsObserver(): Observer<String> {
-        return object : Observer<String> {
-
-            override fun onSubscribe(d: Disposable) {
-                Log.d(TAG, "onSubscribe")
-            }
-
-            override fun onNext(s: String) {
-                Log.d(TAG, "Name: $s")
-            }
-
-            override fun onError(e: Throwable) {
-                Log.e(TAG, "onError: " + e.message)
-            }
-
-            override fun onComplete() {
-                Log.d(TAG, "All items are emitted!")
-            }
-
-
-        }
+    override fun onStop() {
+        super.onStop()
+        deviceListViewModel.getDeviceList().value?.let { deviceListViewModel.saveDevicesToFile(it)}
     }
-
-
 }
 
 
