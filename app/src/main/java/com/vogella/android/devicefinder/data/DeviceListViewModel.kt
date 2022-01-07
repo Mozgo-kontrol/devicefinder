@@ -2,19 +2,13 @@ package com.vogella.android.devicefinder.data
 
 import android.content.Context
 import android.os.Build
-import android.util.AndroidException
 import android.util.Log
-import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.vogella.android.devicefinder.AsyncTransformer
-import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 /**
@@ -26,23 +20,23 @@ import io.reactivex.schedulers.Schedulers
  *
  * */
 
-class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
+class DeviceListViewModel(
+    private val fileDataSource: FileDataSource,
+    private val fireBaseDataSource: FireBaseDataSource
+    ) : ViewModel() {
 
-    private val TAG: String = DataSource::class.java.simpleName
+    private val TAG: String = DeviceListViewModel::class.java.simpleName
 
     private val compositeDisposable = CompositeDisposable()
+
     private val deviceListLiveData: MutableLiveData<List<Device>> = MutableLiveData()
 
     init {
-        if (dataSource.loadFile().isNotEmpty()) {
-            loadDevicesFromFile()
-        } else {
-            loadInitListFromAssets()
-        }
+        loadDevicesFromFile()
     }
 
     private fun loadInitListFromAssets() {
-        dataSource.loadDevicesList()
+        fileDataSource.loadDevicesList()
             .subscribeOn(Schedulers.io())// who runs method loadDevicesList
             .observeOn(AndroidSchedulers.mainThread())//who added list to LifeData
             .subscribe { list ->
@@ -50,15 +44,12 @@ class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
             }.also {
                 compositeDisposable.add(it)
             }
-
     }
 
-    fun saveDevicesToFile(devices: List<Device>) {
+    private fun saveDevicesToFile(devices: List<Device>) {
 
-        Observable.fromCallable {
-            val data = parseListToJsonString(devices)
-            dataSource.saveFile(data)
-        }
+        parseListToJsonString(devices).
+            flatMapCompletable{fileDataSource.saveFile(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { Log.i(
@@ -72,42 +63,22 @@ class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
 
     private fun loadDevicesFromFile() {
 
-        Observable.fromCallable {dataSource.loadFile()}
+       fileDataSource.loadFile()
             .subscribeOn(Schedulers.io())
-            .map {parseJSONSStringToList2(it)}  //??
+            .flatMap{ parseJSONSStringToList2(it) }  //??
             .observeOn(AndroidSchedulers.mainThread())
            // .onErrorReturn {deviceList(dataSource.resources)}//if error
-            .doOnComplete {  Log.i(
-                TAG,
-                "data is laded from the local File"
-            ) }
             .subscribe {
              list -> deviceListLiveData.value = list
+                Log.i(
+                    TAG,
+                    "data is laded from the local File"
+                )
             }
             .also {
                 compositeDisposable.add(it)
             }
     }
-
-    //example 1
-    /*dataSource.loadFile()
-    .subscribeOn(Schedulers.io())
-    .observeOn(Schedulers.newThread())
-    .map {parseJSONSStringToList2(it)}
-    .observeOn(AndroidSchedulers.mainThread())
-    .doOnComplete {  Log.i(
-        TAG,
-        "data is laded from the local File"
-    ) }
-    .subscribe {
-        list -> deviceListLiveData.value = list
-    }
-    .also {
-        compositeDisposable.add(it)
-    }*/
-
-
-
 
 
     override fun onCleared() {
@@ -115,9 +86,26 @@ class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
         compositeDisposable.clear()
     }
 
+    fun addNewDevice(modelName : String) {
+        val device = Device(
+            findMaxId()+1 ,
+            modelName,
+            imOfficeEmployee(),
+            Status.Free
+        )
 
-    fun addNewDevice(device: Device) {
-        // dataSource.addDevice()
+        val currentList = deviceListLiveData.value as MutableList
+        currentList.add(device)
+        deviceListLiveData.postValue(currentList)
+        saveDevicesToFile(currentList)
+
+    }
+
+    private fun findMaxId() : Long {
+        var max :Long = 0
+        val currentList = deviceListLiveData.value as MutableList
+         currentList.forEach {(if(it.id > max) max = it.id)}
+        return max
     }
 
     fun addNewDevicesList(list: List<Device>) {
@@ -126,7 +114,6 @@ class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
         deviceListLiveData.postValue(currentList)
 
     }
-
     fun updateDeviceEmployee(device: Device, employee: Employee) {
         val currentList = deviceListLiveData.value
 
@@ -146,11 +133,10 @@ class DeviceListViewModel(private val dataSource: DataSource) : ViewModel() {
                         TAG,
                         "${d.model} after ${d.employee.firstname} and Status ${d.currentStatus}"
                     )
-
+                    saveDevicesToFile(currentList)
                 }
             }
         }
-
     }
 
     private fun updateDeviceStatus(d: Device): Status =
@@ -190,7 +176,8 @@ class DevicesListViewModelFactory(private val context: Context) : ViewModelProvi
         if (modelClass.isAssignableFrom(DeviceListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return DeviceListViewModel(
-                dataSource = DataSource.getDataSource(context, context.resources)
+                fileDataSource = FileDataSource.getFileDataSource(context, context.resources),
+                fireBaseDataSource = FireBaseDataSource.getFireBaseDataSource(context, context.resources)
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

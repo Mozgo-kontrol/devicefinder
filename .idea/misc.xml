@@ -25,6 +25,9 @@
         <entry key="../../../../layout/compose-model-1638784990011.xml" value="0.42685185185185187" />
         <entry key="../../../../layout/compose-model-1639651397935.xml" value="0.42314814814814816" />
         <entry key="../../../../layout/compose-model-1639671074848.xml" value="0.45092592592592595" />
+        <entry key="../../../../layout/compose-model-1639744847052.xml" value="0.6074074074074074" />
+        <entry key="../../../../layout/compose-model-1639988318829.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1640255853634.xml" value="0.1" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2359375" />
         <entry key="app/src/main/res/drawable/card_border.xml" value="0.25" />
         <entry key="app/src/main/res/drawable/ic_android_default.xml" value="0.2359375" />
@@ -32,12 +35,14 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2359375" />
         <entry key="app/src/main/res/drawable/shape_rechtangle.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12684365781710916" />
+        <entry key="app/src/main/res/layout/add_dialog.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/fragment_add_new_device.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_compose_list.xml" value="0.3880208333333333" />
         <entry key="app/src/main/res/layout/fragment_list.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_list_compose.xml" value="0.37395833333333334" />
         <entry key="app/src/main/res/layout/fragment_list_second.xml" value="0.1685185185185185" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.15625" />
-        <entry key="app/src/main/res/layout/vh_device.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/vh_device.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.3880208333333333" />
       </map>
     </option>

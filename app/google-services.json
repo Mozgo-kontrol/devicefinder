@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "446525700996",
+    "project_id": "devicefinder-server-v1",
+    "storage_bucket": "devicefinder-server-v1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446525700996:android:c2cba1211d90c21bce7bd1",
+        "android_client_info": {
+          "package_name": "com.vogella.android.devicefinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446525700996-0r1l1f8vf9iknsa6ki76oljjtm4opegk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfiFEVccfzd0e5MnbHjq4eygIM4ze7f1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446525700996-0r1l1f8vf9iknsa6ki76oljjtm4opegk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

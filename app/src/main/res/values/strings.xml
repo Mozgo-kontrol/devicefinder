@@ -12,4 +12,7 @@
     <string name="samsung_a">Samsung A51</string>
     <string name="this_is_your_device">This is your device</string>
     <string name="sign_out">Sign out</string>
+    <string name="file_name">DevicesStringJson.json</string>
+    <string name="file_name_assets">devices.json</string>
+    <string name="will_you_add_this_device_to_the_test_devices_list">Will you add this device to the list of test devices</string>
 </resources>

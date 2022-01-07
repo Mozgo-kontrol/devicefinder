@@ -15,6 +15,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
 import com.google.gson.reflect.TypeToken
+import io.reactivex.Single
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
@@ -60,7 +61,7 @@ object Utils {
     fun getJsonFromAssets(context: Context, fileName: String): String? {
         val b = Looper.getMainLooper().thread == Thread.currentThread()
         val currenttread = Thread.currentThread()
-      //  Thread.sleep(5000)
+        //  Thread.sleep(5000)
         Log.i("getJsonFromAssets", "Main its current thread: $b : ${currenttread.name}")
 
         val jsonString: String = try {
@@ -115,7 +116,7 @@ fun parseJSONStringToList(jsonString: String): List<Device> {
 }
 
 
-fun showMeThread(tag: String){
+fun showMeThread(tag: String) {
 
     val b = Looper.getMainLooper().thread == Thread.currentThread()
     val currenttread = Thread.currentThread()
@@ -125,39 +126,42 @@ fun showMeThread(tag: String){
 }
 
 
-fun parseListToJsonString(devices: List<Device>): String {
+fun parseListToJsonString(devices: List<Device>): Single<String> {
 
-    val tag = "parseListToJsonString"
-    showMeThread(tag)
-
-    val gson = Gson()
-    return gson.toJson(devices) // Serialization
+    // Serialization
+    return Single.create { emitter ->
+        val tag = "parseListToJsonString"
+        showMeThread(tag)
+        val gson = Gson()
+        emitter.onSuccess(gson.toJson(devices))
+    }
+    // Serialization
 }
 
-fun parseJSONSStringToList2(jsonString: String): List<Device> {
-
-    val tag = "parseJSONSStringToList2"
-    showMeThread(tag)
-    val gson = Gson()
+fun parseJSONSStringToList2(jsonString: String): Single<List<Device>> {
+    return Single.create { emitter ->
+        val tag = "parseJSONSStringToList2"
+        showMeThread(tag)
+        val gson = Gson()
+        // Deserialization
+        val collectionType: Type = object : TypeToken<Collection<Device>>() {}.type
+        emitter.onSuccess(gson.fromJson(jsonString, collectionType))
+    }
     // Deserialization
-    val collectionType: Type = object : TypeToken<Collection<Device>>() {}.type
-    return gson.fromJson(jsonString, collectionType)
-  // Deserialization
 }
 
 
-fun convertStreamToString(stream: InputStream) : String{
+fun convertStreamToString(stream: InputStream): String {
 
     val tag = "convertStreamToString"
     showMeThread(tag)
-    var text =""
+    var text = ""
     try {
         text = BufferedReader(
             InputStreamReader(stream, StandardCharsets.UTF_8)
-        )   .lines()
-             .collect(Collectors.joining("\n"))
-    }
-    catch (e: Exception) {
+        ).lines()
+            .collect(Collectors.joining("\n"))
+    } catch (e: Exception) {
         e.printStackTrace()
     }
     return text
