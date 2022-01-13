@@ -1,8 +1,11 @@
 package com.vogella.android.devicefinder
 
-import android.Manifest.permission
+
+import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,47 +13,19 @@ import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vogella.android.dev.DeviceAdapter
 import com.vogella.android.devicefinder.Tools.makeToHighFirstLetter
 import com.vogella.android.devicefinder.data.*
-import androidx.core.content.ContextCompat.getSystemService
-
-import android.telephony.TelephonyManager
-
-import android.content.pm.PackageManager
-
-import androidx.core.app.ActivityCompat
-
-
-import android.Manifest.permission.READ_PHONE_STATE
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.READ_PHONE_NUMBERS
-import android.Manifest.permission.READ_SMS
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-
-import android.Manifest.permission.READ_PHONE_STATE
-
-import android.Manifest.permission.READ_PHONE_NUMBERS
-
-import android.Manifest.permission.READ_SMS
-import android.app.Activity
-import android.Manifest.permission.READ_PHONE_STATE
-
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-
-import android.Manifest.permission.READ_PHONE_NUMBERS
-
-import android.Manifest.permission.READ_SMS
-import androidx.annotation.NonNull
 
 
 /**
@@ -62,10 +37,13 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
     private val PERMISSION_REQUEST_CODE = 100
     private val TAG: String = ListFragment::class.java.simpleName
-    private val args: ListFragmentArgs by navArgs()
     private lateinit var vtTittle: TextView
+
     private var firstname :String = ""
     private var lastname :String = ""
+
+    //C8EA3968-E8E0-4A30-BFF5-87D21AD1A040
+
     private val deviceListViewModel by viewModels<DeviceListViewModel> {
             DevicesListViewModelFactory(this.context!!)
         }
@@ -76,18 +54,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         setHasOptionsMenu(true)
 
         vtTittle = view.findViewById(R.id.tv_title)
-
-        firstname = makeToHighFirstLetter(args.firstname)
-        lastname = makeToHighFirstLetter(args.lastname)
-
-        Log.wtf(TAG, "last name:$firstname $lastname!")
-
-        Log.wtf(TAG, "getSystemInfo : ${ Tools.getSystemDetail(context!!)}")
-
+        firstname = makeToHighFirstLetter("Firstname")
+        lastname = makeToHighFirstLetter("Lastname")
 
         vtTittle.text =  getString(R.string.tittle_list_fragment, firstname, lastname)
-
-       // f4521d2e6dbf8a85
 
         val employee = Employee(4, firstname, lastname)
 
@@ -115,7 +85,9 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             bottomSheetDialog(context!!)
         }
         askForPermissions(context!!)
-
+        // f4521d2e6dbf8a85
+        Log.wtf(TAG, "last name:$firstname $lastname!")
+        Log.wtf(TAG, "getSystemInfo : ${Tools.getSystemDetail(context!!)}")
     }
 
      override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -134,7 +106,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
 
     private fun bottomSheetDialog(context: Context){
-
         val bottomSheetDialog = BottomSheetDialog(context!!)
         val dialogView = layoutInflater.inflate(R.layout.add_dialog,null)
         dialogView.findViewById<TextView>(R.id.tv_model_afd)
@@ -146,7 +117,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         buttonDialogOk.setOnClickListener {
             val modelMame = editTextDialog.text.toString().trim()
             if (modelMame.isNotEmpty()){
-
                 deviceListViewModel.addNewDevice(modelMame)
                 bottomSheetDialog.dismiss()
             }
@@ -154,9 +124,13 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         buttonDialogCancel.setOnClickListener{bottomSheetDialog.dismiss()}
     }
 
+
+
     private fun goToLoginFragment(){
         findNavController().navigateUp()
     }
+
+
 
     private fun askForPermissions(context: Context){
         if (ActivityCompat.checkSelfPermission(
@@ -170,9 +144,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 PERMISSION_REQUEST_CODE
             )
         } else {
-
             Log.wtf(TAG, "Permissions is Granted")
-
         }
     }
     override fun onRequestPermissionsResult(

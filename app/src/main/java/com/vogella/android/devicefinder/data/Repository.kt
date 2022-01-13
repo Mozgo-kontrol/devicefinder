@@ -6,10 +6,13 @@ import io.reactivex.Single
 
 interface Repository {
      //File
-     fun loadDevicesList(filename: String): Observable<List<Device>>
+     fun loadDevicesListFromAssets() : Observable<List<Device>>
      fun saveFile(jsonString : String) : Completable
      fun loadFile(): Single<String>
      //Firebase
-
-
+     fun addToFireDataBase(device : Device) : Completable
+     fun getDeviceListFromRemoteDataBase() : Observable<List<Device>>
+     //common
+     fun synchronize(): Completable
+     fun cleanListener()
 }

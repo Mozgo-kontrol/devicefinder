@@ -16,6 +16,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -56,11 +59,12 @@ android {
 
 dependencies {
 
-    implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'androidx.activity:activity-compose:1.4.0'
     var lifecycle_version = "2.4.0"
-    var nav_version = "2.3.5"
     var fragment_version = "1.4.0"
     var retrofit_version = "2.9.0"
+
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -73,6 +77,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:29.0.2')
 
     implementation 'com.google.firebase:firebase-database-ktx'
+
+    implementation 'com.google.firebase:firebase-appcheck-debug:16.0.0-beta04'
+
     // Add the dependency for the Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
@@ -95,14 +102,14 @@ dependencies {
 
 
     // Kotlin Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
 
     // Feature module Support
     implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
 
     // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
 
     // Testing Navigation
     androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
@@ -116,6 +123,12 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"

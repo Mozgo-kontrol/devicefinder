@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -21,9 +22,7 @@ import io.reactivex.schedulers.Schedulers
  * */
 
 class DeviceListViewModel(
-    private val fileDataSource: FileDataSource,
-    private val fireBaseDataSource: FireBaseDataSource
-    ) : ViewModel() {
+    private val repositoryImpl: RepositoryImpl) : ViewModel() {
 
     private val TAG: String = DeviceListViewModel::class.java.simpleName
 
@@ -32,11 +31,12 @@ class DeviceListViewModel(
     private val deviceListLiveData: MutableLiveData<List<Device>> = MutableLiveData()
 
     init {
-        loadDevicesFromFile()
+        loadInitListFromAssets()
+        //loadDevicesFromFile()
     }
 
     private fun loadInitListFromAssets() {
-        fileDataSource.loadDevicesList()
+        repositoryImpl.loadDevicesListFromAssets()
             .subscribeOn(Schedulers.io())// who runs method loadDevicesList
             .observeOn(AndroidSchedulers.mainThread())//who added list to LifeData
             .subscribe { list ->
@@ -46,10 +46,32 @@ class DeviceListViewModel(
             }
     }
 
+    fun getDeviceListFromRemoteDataBase() {
+        repositoryImpl.getDeviceListFromRemoteDataBase()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                    list -> list.forEach { it ->
+
+                if(!deviceListLiveData.value?.contains(it)!!){
+
+            }
+
+            }
+                deviceListLiveData.value = list
+                Log.i(
+            TAG,
+            "data from FireBase"
+        ) }
+            .also {
+                compositeDisposable.add(it)
+            }
+    }
+
     private fun saveDevicesToFile(devices: List<Device>) {
 
         parseListToJsonString(devices).
-            flatMapCompletable{fileDataSource.saveFile(it) }
+            flatMapCompletable{repositoryImpl.saveFile(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { Log.i(
@@ -61,9 +83,26 @@ class DeviceListViewModel(
             }
     }
 
+    private fun addDeviceToFireBase(device: Device){
+       Observable.just(device).
+       flatMapCompletable{
+           repositoryImpl.addToFireDataBase(it)}
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe { Log.i(
+                TAG,
+                "device is added to the FireBase"
+            ) }
+            .also {
+                compositeDisposable.add(it)
+            }
+    }
+
     private fun loadDevicesFromFile() {
 
-       fileDataSource.loadFile()
+        repositoryImpl.getDeviceListFromRemoteDataBase()
+
+        repositoryImpl.loadFile()
             .subscribeOn(Schedulers.io())
             .flatMap{ parseJSONSStringToList2(it) }  //??
             .observeOn(AndroidSchedulers.mainThread())
@@ -84,7 +123,9 @@ class DeviceListViewModel(
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
+
     }
+
 
     fun addNewDevice(modelName : String) {
         val device = Device(
@@ -94,9 +135,13 @@ class DeviceListViewModel(
             Status.Free
         )
 
+
         val currentList = deviceListLiveData.value as MutableList
         currentList.add(device)
         deviceListLiveData.postValue(currentList)
+
+        //addDeviceToFireBase(device)
+
         saveDevicesToFile(currentList)
 
     }
@@ -110,7 +155,12 @@ class DeviceListViewModel(
 
     fun addNewDevicesList(list: List<Device>) {
         val currentList = deviceListLiveData.value as MutableList<Device>
-        list.forEach { currentList.add(it) }
+        list.forEach {
+            if(!currentList.contains(it)) currentList.add(it)
+            else Log.i(
+                TAG,
+                "device ${it.id} is in the list"
+            ) }
         deviceListLiveData.postValue(currentList)
 
     }
@@ -176,8 +226,9 @@ class DevicesListViewModelFactory(private val context: Context) : ViewModelProvi
         if (modelClass.isAssignableFrom(DeviceListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return DeviceListViewModel(
-                fileDataSource = FileDataSource.getFileDataSource(context, context.resources),
-                fireBaseDataSource = FireBaseDataSource.getFireBaseDataSource(context, context.resources)
+            RepositoryImpl(
+                FileDataSource.getFileDataSource(context, context.resources),
+                FireBaseDataSource.getFireBaseDataSource(context, context.resources))
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

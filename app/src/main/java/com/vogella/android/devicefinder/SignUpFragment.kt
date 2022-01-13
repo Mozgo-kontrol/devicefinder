@@ -43,16 +43,16 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.vogella.android.devicefinder.Tools.isValidPassword
 
-
 /**
  * A simple [Fragment] subclass.
- *
+ * Use the [SignUpFragment.newInstance] factory method to
+ * create an instance of this fragment.
  */
+
 @ExperimentalComposeUiApi
-class LoginFragment : Fragment(R.layout.fragment_login) {
+class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
-    private val TAG: String = LoginFragment::class.java.simpleName
-
+    private val TAG: String = SignUpFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,84 +60,54 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     ): View? {
         // Inflate the layout for this fragment
         return ComposeView(this.context!!).apply {
-
             setContent {
-                Greeting()
+                SignUp()
             }
 
         }
     }
 
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-       // val inputMail = view.findViewById<EditText>(R.id.ti_et)
-      //  val login = view.findViewById<Button>(R.id.button)
-
-        //goToListFragment("igor", "ferbert")
-     //   login.setOnClickListener {
-            /*    val splitEmail = inputMail.text.toString().split(".", "@")
-                val firstName = splitEmail[0]
-                val lastName = splitEmail[1]
-                val afterAt = "@edeka.de"
-                if (inputMail.text.toString().isNotEmpty() && inputMail.text.toString() == "$firstName.$lastName$afterAt") {
-
-                    goToListFragment(firstName,lastName)
-                } else
-                    Toast.makeText(
-                        activity, "E-Mail ungültig", Toast.LENGTH_SHORT
-                    ).show()*/
-
-    //    }
-
-    }
-
-    private fun goToListFragment() {
-        val action = LoginFragmentDirections.actionLoginFragmentToListFragment()
-        findNavController().navigate(action)
-    }
-
-    private fun goToSignUpFragment() {
-        val action = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
-        findNavController().navigate(action)
-    }
-
-
     @Composable
     @Preview(showBackground = true, name = "Light Mode")
-    fun Greeting() {
+    fun SignUp() {
         MaterialTheme {
             Column(modifier = Modifier.fillMaxSize()) {
-               // TopAppBar(title = {
+             //   TopAppBar(title = {
                //     Text("Device Finder")
-              //  })
-                Title("Login")
+             //   })
+                Title("SignUp")
                 DefaultRecipeCard()
             }
         }
 
     }
 
+    private fun goToListFragment() {
+       val action = SignUpFragmentDirections.actionSignUpFragmentToListFragment()
+        findNavController().navigate(action)
+    }
+
+    private fun goToLoginFragment() {
+        val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
+        findNavController().navigate(action)
+    }
+
+    @Composable
+    //  @Preview
+    fun DefaultRecipeCard() {
+        MaterialTheme {
+            RecipeCard(Modifier.padding(4.dp))
+        }
+    }
     @Composable
     fun RecipeCard(modifier: Modifier) {
         Surface(shape = RoundedCornerShape(8.dp), elevation = 8.dp, modifier = modifier) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     inputFields()
+
                 }
             }
-        }
-    }
-
-    @Composable
-  //  @Preview
-    fun DefaultRecipeCard() {
-        MaterialTheme {
-            RecipeCard(Modifier.padding(4.dp))
         }
     }
 
@@ -146,51 +116,36 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         val (focusRequester) = FocusRequester.createRefs()
         Column(modifier = Modifier.fillMaxWidth()) {
+            nameInputField(focusRequester)
             emailInputField(focusRequester)
             passwordsInputField(focusRequester)
-            LoginButton()
+            SignUPButton()
 
         }
     }
 
     @Composable
-    fun LoginButton() {
-
-         Box(
-             Modifier
-                 .fillMaxWidth()
-                 .padding(top = 8.dp),
-                 contentAlignment = Alignment.Center
-             ) {
-                Button(
-                    onClick = { Log.wtf(TAG, "Button Login")
-                        goToListFragment()
-                    },
-                    modifier = Modifier.size(width = 150.dp, height = 35.dp),
-                    content = {
-                        Text(text = "Login")
-                    })
-         }
-        Box(
-            Modifier
+    fun nameInputField(focusRequester: FocusRequester) {
+        var username by rememberSaveable { mutableStateOf("") }
+        TextField(
+            value = username,
+            label = { Text("Name") },
+            textStyle = TextStyle(fontWeight = FontWeight.Bold),
+            onValueChange = { username = it },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Text),
+            keyboardActions = KeyboardActions (
+                onNext = {focusRequester.requestFocus()}
+            ),
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Don't have an account: here!",
-                modifier = Modifier
-                    .clickable {
-                        Log.wtf(TAG, "go to SignUp")
-                        goToSignUpFragment()
-                    },
-                color = Color.Blue,
-                textAlign = TextAlign.Center
-            )
-        }
-           // Spacer(modifier = Modifier.padding(top = 8.dp))
+                .padding(5.dp)
+                .focusRequester(focusRequester)
+        )
 
     }
-
     @Composable
     fun emailInputField(focusRequester: FocusRequester) {
         var email by rememberSaveable { mutableStateOf("") }
@@ -219,7 +174,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 onNext = {
                     validate(email)
                     if(!isError){
-                    focusRequester.requestFocus()
+                        focusRequester.requestFocus()
                     }
                 }
             ),
@@ -245,7 +200,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         var password by rememberSaveable { mutableStateOf("") }
 
+        var confirmPassword by rememberSaveable { mutableStateOf("") }
+
         var passwordHidden by rememberSaveable { mutableStateOf(true) }
+
+        var confirmPasswordHidden by rememberSaveable { mutableStateOf(true) }
+
+        var isPasswordTheSame by rememberSaveable { mutableStateOf(true) }
 
         val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -258,10 +219,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions (
-                onDone = {  keyboardController?.hide()}
+                onNext = {focusRequester.requestFocus()}
             ),
             trailingIcon = {
                 IconButton(onClick = { passwordHidden = !passwordHidden }) {
@@ -278,17 +239,79 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 .focusRequester(focusRequester),
             singleLine = true
         )
-       if (!password.isValidPassword() && password.count()>0) {
+        if (!password.isValidPassword() && password.count()>0) {
+            if(!isPasswordTheSame){
+                ErrorMessage("Password and confirm password are different!")
+            }
+            ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
+        }
+        TextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirm Password") },
+            visualTransformation =
+            if (confirmPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions (
+                onDone = {
+                    keyboardController?.hide()
+                }
+            ),
+            trailingIcon = {
+                IconButton(onClick = { confirmPasswordHidden = !confirmPasswordHidden }) {
+                    val visibilityIcon =
+                        if (confirmPasswordHidden) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    // Please provide localized description for accessibility services
+                    val description = if (confirmPasswordHidden) "Show password" else "Hide password"
+                    Icon(imageVector = visibilityIcon, contentDescription = description)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+                .focusRequester(focusRequester),
+            singleLine = true
+        )
+        if (!confirmPassword.isValidPassword()&&confirmPassword.count()>0) {
+            ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
 
-           ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
-      }
+        }
+        isPasswordTheSame = if (password != confirmPassword && confirmPassword.count()>0) {
+            ErrorMessage("Password and confirm password are different!")
+            false
+        } else true
     }
 
 
+    @Composable
+    fun SignUPButton() {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(
+                onClick = {
+                  goToListFragment()
+                  Log.wtf(TAG, "Button signUp")
+                },
+                modifier = Modifier.size(width = 150.dp, height = 35.dp),
+                content = {
+                    Text(text = "Sign Up")
+                })
+            // Spacer(modifier = Modifier.padding(top = 8.dp))
+        }
+        Text(text = "If you already have an account: here!",
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .clickable { Log.wtf(TAG, "go to Login")
+                    goToLoginFragment()
+                           },
+            color = Color.Blue,
+            textAlign = TextAlign.Center,
+        )
+    }
 
 }
-
-
-
-
-

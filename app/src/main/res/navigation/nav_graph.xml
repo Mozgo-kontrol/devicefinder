@@ -12,14 +12,10 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_listFragment"
-            app:destination="@id/listFragment">
-            <argument
-                android:name="firstname"
-                app:argType="string" />
-            <argument
-                android:name="lastname"
-                app:argType="string" />
-        </action>
+            app:destination="@id/listFragment"/>
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/listFragment"
@@ -30,12 +26,18 @@
         <action
             android:id="@+id/action_listFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
-        <argument
-            android:name="firstname"
-            app:argType="string" />
-        <argument
-            android:name="lastname"
-            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.vogella.android.devicefinder.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 </navigation>

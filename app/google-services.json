@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "446525700996",
+    "firebase_url": "https://devicefinder-server-v1-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "devicefinder-server-v1",
     "storage_bucket": "devicefinder-server-v1.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "446525700996-s9ka817n59tvea27m0aosacea239upmo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vogella.android.devicefinder",
+            "certificate_hash": "c01bd4175af28c57623739bec1a1a11e8153eb4b"
+          }
+        },
         {
           "client_id": "446525700996-0r1l1f8vf9iknsa6ki76oljjtm4opegk.apps.googleusercontent.com",
           "client_type": 3

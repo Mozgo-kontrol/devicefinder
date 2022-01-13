@@ -15,4 +15,8 @@
     <string name="file_name">DevicesStringJson.json</string>
     <string name="file_name_assets">devices.json</string>
     <string name="will_you_add_this_device_to_the_test_devices_list">Will you add this device to the list of test devices</string>
+    <string name="please_enter_your_e_mail_to_continue">Please enter your E-Mail to continue:</string>
+    <string name="enter_e_mail">Enter E-Mail</string>
+    <string name="button">Button</string>
+    <string name="title_activity_main2">MainActivity2</string>
 </resources>
