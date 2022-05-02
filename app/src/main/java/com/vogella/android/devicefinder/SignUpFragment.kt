@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,10 +29,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -61,22 +64,24 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
         // Inflate the layout for this fragment
         return ComposeView(this.context!!).apply {
             setContent {
-                SignUp()
+                    SignUpScreen()
+                }
+
             }
 
-        }
     }
 
     @Composable
     @Preview(showBackground = true, name = "Light Mode")
-    fun SignUp() {
-        MaterialTheme {
-            Column(modifier = Modifier.fillMaxSize()) {
-             //   TopAppBar(title = {
-               //     Text("Device Finder")
-             //   })
+    fun SignUpScreen() {
+        val scrollState = rememberScrollState()
+      MaterialTheme{
+            Column(modifier = Modifier.fillMaxSize()
+                .scrollable(
+                state = scrollState,
+                orientation = Orientation.Vertical)) {
                 Title("SignUp")
-                DefaultRecipeCard()
+                ScreenCard(Modifier.padding(4.dp))
             }
         }
 
@@ -93,18 +98,11 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     }
 
     @Composable
-    //  @Preview
-    fun DefaultRecipeCard() {
-        MaterialTheme {
-            RecipeCard(Modifier.padding(4.dp))
-        }
-    }
-    @Composable
-    fun RecipeCard(modifier: Modifier) {
+    fun ScreenCard(modifier: Modifier) {
         Surface(shape = RoundedCornerShape(8.dp), elevation = 8.dp, modifier = modifier) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    inputFields()
+                    InputFields()
 
                 }
             }
@@ -112,26 +110,40 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     }
 
     @Composable
-    fun inputFields() {
-
+    fun InputFields() {
         val (focusRequester) = FocusRequester.createRefs()
         Column(modifier = Modifier.fillMaxWidth()) {
+
             nameInputField(focusRequester)
             emailInputField(focusRequester)
-            passwordsInputField(focusRequester)
-            SignUPButton()
+             passwordsInputField(focusRequester)
 
+
+
+            InfoText("If you already have an account: here!")
         }
+
     }
 
     @Composable
-    fun nameInputField(focusRequester: FocusRequester) {
+    fun nameInputField(focusRequester: FocusRequester){
         var username by rememberSaveable { mutableStateOf("") }
+        var isError by rememberSaveable { mutableStateOf(false)}
+
+        fun validate(text: String) {
+            isError = text.trim().count() < 6
+        }
         TextField(
             value = username,
-            label = { Text("Name") },
+            label = {
+                val label = if (!isError) "Name" else "Name*"
+                Text(label)},
             textStyle = TextStyle(fontWeight = FontWeight.Bold),
-            onValueChange = { username = it },
+            onValueChange = {
+                username = it
+                isError = false
+                            },
+            isError = isError,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
@@ -143,22 +155,31 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
                 .fillMaxWidth()
                 .padding(5.dp)
                 .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (username.count() > 0) {
+                        validate(username)
+                    }
+                }
         )
+        if (isError) {
+            ErrorMessage("Name requires at least 6 symbols")
+        }
 
     }
+
     @Composable
-    fun emailInputField(focusRequester: FocusRequester) {
+    fun emailInputField(focusRequester: FocusRequester) : String{
         var email by rememberSaveable { mutableStateOf("") }
         var isError by rememberSaveable { mutableStateOf(false)}
-        val isValid = email.count() > 5 && '@' in email
+        //val isValid = email.count() > 6 && '@' in email
 
         fun validate(text: String) {
-            isError = text.count() < 5
+            isError = text.count() <= 6 && '@' !in email
         }
         TextField(
             value = email,
             label = {
-                val label = if (isValid) "Email" else "Email*"
+                val label = if (!isError) "Email" else "Email*"
                 Text(label)},
             textStyle = TextStyle(fontWeight = FontWeight.Bold),
             onValueChange = {
@@ -172,31 +193,35 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             ),
             keyboardActions = KeyboardActions (
                 onNext = {
-                    validate(email)
+                    //validate(email)
                     if(!isError){
                         focusRequester.requestFocus()
                     }
                 }
             ),
             modifier = Modifier
-                .semantics {
-                    // Provide localized description of the error
-                    if (isError) {
-                        // error("Email format is invalid.")
-                    }
-                }
                 .fillMaxWidth()
                 .padding(5.dp)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (email.count() > 0) {
+                        validate(email)
+                    }
+                    Log.wtf(TAG, "onFocusChanged")
+                },
             singleLine = true
         )
         if (isError) {
-            ErrorMessage("Requires '@' and at least 5 symbols")
+            ErrorMessage("Email is not Valid")
         }
+        //Check if Email is valid!
+
+
+        return ""
     }
 
     @Composable
-    fun passwordsInputField(focusRequester: FocusRequester) {
+    fun passwordsInputField(focusRequester: FocusRequester) : String {
 
         var password by rememberSaveable { mutableStateOf("") }
 
@@ -206,14 +231,29 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
         var confirmPasswordHidden by rememberSaveable { mutableStateOf(true) }
 
+        var isErrorPassword by rememberSaveable { mutableStateOf(false)}
+
+        var isErrorConfirm by rememberSaveable { mutableStateOf(false)}
+
+        fun validatePassword(text: String) {
+            isErrorPassword =!text.isValidPassword()
+        }
+        fun validateConfirmPassword(text: String) {
+            isErrorConfirm =!text.isValidPassword()
+        }
+
         var isPasswordTheSame by rememberSaveable { mutableStateOf(true) }
 
         val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
             value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
+            onValueChange = { password = it
+                  isErrorPassword = false},
+            label = {
+                val label = if (!isErrorPassword) "Password" else "Password*"
+                Text(label)},
+            isError = isErrorPassword,
             visualTransformation =
             if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
 
@@ -236,10 +276,15 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (password.count() > 0) {
+                        validatePassword(password)
+                    }
+                },
             singleLine = true
         )
-        if (!password.isValidPassword() && password.count()>0) {
+        if (!password.isValidPassword() && password.isNotEmpty()) {
             if(!isPasswordTheSame){
                 ErrorMessage("Password and confirm password are different!")
             }
@@ -248,7 +293,10 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
         TextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
+            label = {
+                val label = if (!isErrorConfirm) "Confirm Password" else "Confirm Password*"
+                Text(label)},
+            isError = isErrorConfirm,
             visualTransformation =
             if (confirmPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
@@ -270,17 +318,30 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (confirmPassword.count() > 0) {
+                        validateConfirmPassword(confirmPassword)
+                    }
+                },
             singleLine = true
         )
         if (!confirmPassword.isValidPassword()&&confirmPassword.count()>0) {
+
             ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
 
         }
-        isPasswordTheSame = if (password != confirmPassword && confirmPassword.count()>0) {
+        isPasswordTheSame = if (password != confirmPassword) {
             ErrorMessage("Password and confirm password are different!")
             false
         } else true
+
+        if(password.isValidPassword()&&isPasswordTheSame){
+
+            return password
+        }
+
+        return ""
     }
 
 
@@ -303,15 +364,25 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
                 })
             // Spacer(modifier = Modifier.padding(top = 8.dp))
         }
-        Text(text = "If you already have an account: here!",
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .clickable { Log.wtf(TAG, "go to Login")
-                    goToLoginFragment()
-                           },
-            color = Color.Blue,
-            textAlign = TextAlign.Center,
-        )
     }
 
+    @Composable
+    fun InfoText(text: String){
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = text,
+                modifier = Modifier
+                    .clickable {
+                        Log.wtf(TAG, "go to SignUp")
+                        goToLoginFragment()
+                    },
+                color = Color.Blue,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }

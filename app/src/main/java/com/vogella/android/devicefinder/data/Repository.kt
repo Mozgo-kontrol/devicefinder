@@ -11,8 +11,9 @@ interface Repository {
      fun loadFile(): Single<String>
      //Firebase
      fun addToFireDataBase(device : Device) : Completable
-     fun getDeviceListFromRemoteDataBase() : Observable<List<Device>>
+     fun getDeviceListFromRemoteDataBase() : Single<List<Device>>
+     fun updateDeviceInFireBase(device: Device): Completable
      //common
      fun synchronize(): Completable
-     fun cleanListener()
+     fun getDeviceListFromFireBaseApi() : Single<List<Device>>
 }

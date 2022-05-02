@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,12 +25,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,8 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.vogella.android.devicefinder.Tools.isValidPassword
+import com.vogella.android.devicefinder.viewmodels.LoginViewModel
+import com.vogella.android.devicefinder.viewmodels.LoginViewModelFactory
 
 
 /**
@@ -53,7 +54,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private val TAG: String = LoginFragment::class.java.simpleName
 
-
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModelFactory(this.context!!)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,38 +65,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         return ComposeView(this.context!!).apply {
 
             setContent {
+                //goToListFragment()
                 Greeting()
             }
 
         }
-    }
-
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-       // val inputMail = view.findViewById<EditText>(R.id.ti_et)
-      //  val login = view.findViewById<Button>(R.id.button)
-
-        //goToListFragment("igor", "ferbert")
-     //   login.setOnClickListener {
-            /*    val splitEmail = inputMail.text.toString().split(".", "@")
-                val firstName = splitEmail[0]
-                val lastName = splitEmail[1]
-                val afterAt = "@edeka.de"
-                if (inputMail.text.toString().isNotEmpty() && inputMail.text.toString() == "$firstName.$lastName$afterAt") {
-
-                    goToListFragment(firstName,lastName)
-                } else
-                    Toast.makeText(
-                        activity, "E-Mail ungültig", Toast.LENGTH_SHORT
-                    ).show()*/
-
-    //    }
-
     }
 
     private fun goToListFragment() {
@@ -112,72 +88,55 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     fun Greeting() {
         MaterialTheme {
             Column(modifier = Modifier.fillMaxSize()) {
-               // TopAppBar(title = {
-               //     Text("Device Finder")
-              //  })
-                Title("Login")
-                DefaultRecipeCard()
+                //Title("Login")
+                ScreenCard(Modifier.padding(4.dp))
             }
         }
 
     }
 
     @Composable
-    fun RecipeCard(modifier: Modifier) {
+    fun ScreenCard(modifier: Modifier) {
         Surface(shape = RoundedCornerShape(8.dp), elevation = 8.dp, modifier = modifier) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    inputFields()
+                    InputFields(loginViewModel)
                 }
             }
         }
     }
-
     @Composable
-  //  @Preview
-    fun DefaultRecipeCard() {
-        MaterialTheme {
-            RecipeCard(Modifier.padding(4.dp))
+    fun InputFields(loginViewModel: LoginViewModel) {
+       // val (focusRequester) = FocusRequester.createRefs()
+        LazyColumn(modifier = Modifier.fillMaxWidth()){
+
+           item{
+               Title("Login")
+           }
+            item{
+                emailInputField(loginViewModel)
+                passwordsInputField(loginViewModel)
+            }
+            item{
+                LoginButton(loginViewModel)
+            }
+            item{
+                InfoText("Don't have an account: here!")
+            }
+
+
         }
     }
 
     @Composable
-    fun inputFields() {
-
-        val (focusRequester) = FocusRequester.createRefs()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            emailInputField(focusRequester)
-            passwordsInputField(focusRequester)
-            LoginButton()
-
-        }
-    }
-
-    @Composable
-    fun LoginButton() {
-
-         Box(
-             Modifier
-                 .fillMaxWidth()
-                 .padding(top = 8.dp),
-                 contentAlignment = Alignment.Center
-             ) {
-                Button(
-                    onClick = { Log.wtf(TAG, "Button Login")
-                        goToListFragment()
-                    },
-                    modifier = Modifier.size(width = 150.dp, height = 35.dp),
-                    content = {
-                        Text(text = "Login")
-                    })
-         }
+    fun InfoText(text: String){
         Box(
             Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "Don't have an account: here!",
+            Text(text = text,
                 modifier = Modifier
                     .clickable {
                         Log.wtf(TAG, "go to SignUp")
@@ -187,72 +146,98 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 textAlign = TextAlign.Center
             )
         }
+    }
+
+    @Composable
+    fun LoginButton(loginViewModel: LoginViewModel) {
+         Box(
+             Modifier
+                 .fillMaxWidth()
+                 .padding(4.dp),
+                 contentAlignment = Alignment.Center,
+             ) {
+                Button(
+                    onClick = {
+
+                        if(loginViewModel.isValidEmail()&&loginViewModel.isValidPassword()){
+                            Log.wtf(TAG, "Button Login : login User with: ${loginViewModel.email} " +
+                                    "password: ${loginViewModel.password}")
+                        }
+
+                    },
+                    enabled = true,
+                    modifier = Modifier.size(width = 150.dp, height = 35.dp),
+                    content = {
+                        Text(text = "Login")
+                    })
+         }
            // Spacer(modifier = Modifier.padding(top = 8.dp))
 
     }
 
     @Composable
-    fun emailInputField(focusRequester: FocusRequester) {
-        var email by rememberSaveable { mutableStateOf("") }
-        var isError by rememberSaveable { mutableStateOf(false)}
-        val isValid = email.count() > 5 && '@' in email
+    fun emailInputField(loginViewModel: LoginViewModel){
 
-        fun validate(text: String) {
-            isError = text.count() < 5
-        }
-        TextField(
-            value = email,
-            label = {
-                val label = if (isValid) "Email" else "Email*"
-                Text(label)},
-            textStyle = TextStyle(fontWeight = FontWeight.Bold),
-            onValueChange = {
-                email = it
-                isError = false
-            },
-            isError = isError,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Email
-            ),
-            keyboardActions = KeyboardActions (
-                onNext = {
-                    validate(email)
-                    if(!isError){
-                    focusRequester.requestFocus()
+        var email by rememberSaveable { mutableStateOf("") }
+        var isError by rememberSaveable { mutableStateOf(loginViewModel.isError.value!!) }
+            TextField(
+                value = email,
+                label = {
+                    val label = if (!isError) "Email*" else "Email"
+                    Text(label)},
+
+                textStyle = TextStyle(fontWeight = FontWeight.Bold),
+                onValueChange = {
+                    email = it
+                    loginViewModel.email.value = it
+                    isError = false
+                },
+                isError = isError,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email
+                ),
+                keyboardActions = KeyboardActions (
+                    onNext = {
+                        //    if(isError){
+                        // loginViewModel.isValidEmail(email)
+                        //  }
                     }
-                }
-            ),
-            modifier = Modifier
-                .semantics {
-                    // Provide localized description of the error
-                    if (isError) {
-                        // error("Email format is invalid.")
-                    }
-                }
-                .fillMaxWidth()
-                .padding(5.dp)
-                .focusRequester(focusRequester),
-            singleLine = true
-        )
-        if (isError) {
-            ErrorMessage("Requires '@' and at least 5 symbols")
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .onFocusChanged {
+                    },
+                singleLine = true,
+            )
+        if (isError!!) {
+            ErrorMessage("Requires '@' and at least 6 symbols")
         }
     }
 
     @Composable
-    fun passwordsInputField(focusRequester: FocusRequester) {
+    fun passwordsInputField(loginViewModel: LoginViewModel) {
 
         var password by rememberSaveable { mutableStateOf("") }
 
         var passwordHidden by rememberSaveable { mutableStateOf(true) }
 
+       // var isError by rememberSaveable { mutableStateOf(false) }
+
         val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
             value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
+            onValueChange = {
+                password = it
+                loginViewModel.password.value = it
+                loginViewModel.isErrorPassword.value = false
+            },
+            label = {
+                val label = if (!loginViewModel.isErrorPassword.value!!) "Password*" else "Password"
+                Text(label)
+            },
             visualTransformation =
             if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
 
@@ -260,8 +245,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions (
-                onDone = {  keyboardController?.hide()}
+            isError = loginViewModel.isErrorPassword.value!!,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
             ),
             trailingIcon = {
                 IconButton(onClick = { passwordHidden = !passwordHidden }) {
@@ -274,18 +262,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp)
-                .focusRequester(focusRequester),
+                .padding(5.dp),
             singleLine = true
         )
-       if (!password.isValidPassword() && password.count()>0) {
-
-           ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
-      }
+        if (loginViewModel.isErrorPassword.value!!) {
+            ErrorMessage("Password consist of numbers, uppercase, lowercase, special and at least 7")
+        }
     }
-
-
-
 }
 
 

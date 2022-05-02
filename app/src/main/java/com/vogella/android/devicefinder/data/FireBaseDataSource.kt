@@ -11,17 +11,16 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Single
 
 class FireBaseDataSource (val context: Context, val resources: Resources){
 
     private val TAG: String = FireBaseDataSource::class.java.simpleName
     private val _databaseRefer: DatabaseReference = Firebase.database.reference.child("devices")
-    lateinit var valueEventListener : ValueEventListener
+
     init {
     // Write a message to the database
     }
-
 
     fun addDeviceToFireBase(device: Device): Completable {
         showMeThread(TAG)
@@ -39,8 +38,8 @@ class FireBaseDataSource (val context: Context, val resources: Resources){
         }
     }
 
-    fun getDeviceListFromFireBase() : Observable<List<Device>>{
-        return Observable.create { emitter ->
+    fun getDeviceListFromFireBase() : Single<List<Device>> {
+        return Single.create { emitter ->
             val list = mutableListOf<Device>()
             val query = _databaseRefer.orderByChild("id")
             query.addValueEventListener(object: ValueEventListener {
@@ -65,17 +64,21 @@ class FireBaseDataSource (val context: Context, val resources: Resources){
                       Log.d(TAG, "Device firstname: ${device.employee.firstname}")
                   }
                     Log.d(TAG, "List length: ${list.size}")
+                    emitter.onSuccess(list)
+
                 }
                 override fun onCancelled(error: DatabaseError) {
                     Log.w(TAG, "Failed to read value.", error.toException())
+                    emitter.onError(error.toException())
                 }
             })
         }
     }
 
-    fun cleanListener() {
+    fun updateDeviceInFireBase(device: Device): Completable{
         TODO("Not yet implemented")
     }
+
 
 
     companion object {

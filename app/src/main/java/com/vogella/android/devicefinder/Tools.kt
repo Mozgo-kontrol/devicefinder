@@ -50,6 +50,17 @@ object Tools {
         println(matcher)
         return matcher.matches()&& this.count() > 6
   }
+    const val PASSWORDPATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$"
+    const val EMAILPATTERN = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"
+
+    /*fun CharSequence.isValidEmail(): Boolean {
+        val emailPattern = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"
+        val pattern = Pattern.compile(emailPattern)
+        //println(pattern)
+        val matcher = pattern.matcher(this)
+       // println(matcher)
+        return matcher.matches()&& this.count() > 6
+    }*/
 
 
 }

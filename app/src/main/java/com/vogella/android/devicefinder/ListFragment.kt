@@ -116,6 +116,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         bottomSheetDialog.show()
         buttonDialogOk.setOnClickListener {
             val modelMame = editTextDialog.text.toString().trim()
+
             if (modelMame.isNotEmpty()){
                 deviceListViewModel.addNewDevice(modelMame)
                 bottomSheetDialog.dismiss()
