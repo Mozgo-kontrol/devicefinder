@@ -6,7 +6,7 @@ import retrofit2.http.*
 
 
 interface Api {
-
+    //hallo
    // createNewObjekt
     @POST("/{devices}.json")
     fun addDevice(@Path("devices") s1: String?, @Body device: Device?): Call<Device?>?
